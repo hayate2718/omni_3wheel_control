@@ -13,9 +13,13 @@ omni_3wheel_control::omni_3wheel_control() :
 	global_velocity_y(0),
 	local_velocity_x(0),
 	local_velocity_y(0),
-	robot_angle(0)
+	robot_angle(0),
+	robot_range(0.1),
+	robot_angular_velocity(0),
+	robot_angular_wheel(0)
 {
 
+	//ここでオムニホイールの角度を定義
 	cos_theta_1 = 1 / 2;
 	sin_theta_1 = sqrt_3 / 2;
 
@@ -50,7 +54,7 @@ void omni_3wheel_control::global_control(float global_velocity_x, float global_v
 	angle = this->get_robot_angle();
 
 	this->local_control(
-		this->global_velocity_x * cosf(angle)+global_velocity_y * sinf(angle),
+		this->global_velocity_x * cosf(angle)+this->global_velocity_y * sinf(angle),
 		this->global_velocity_y * cosf(angle)-this->global_velocity_x * sinf(angle)
 	);
 
@@ -58,18 +62,27 @@ void omni_3wheel_control::global_control(float global_velocity_x, float global_v
 }
 
 
+void omni_3wheel_control::angular_velocity_control(float angular_velocity) {
+	
+	this->robot_angular_velocity = angular_velocity;
+
+	this->robot_angular_wheel = this->robot_range * this->robot_angular_velocity;
+	
+	return;
+}
+
 float omni_3wheel_control::get_wheel_velocity_1() {
-	this->wheel_1_velocity = this->wheel_1;
+	this->wheel_1_velocity = this->wheel_1 + this->robot_angular_wheel;
 	return this->wheel_1_velocity;
 }
 
 float omni_3wheel_control::get_wheel_velocity_2() {
-	this->wheel_2_velocity = this->wheel_2;
+	this->wheel_2_velocity = this->wheel_2 + this->robot_angular_wheel;
 	return this->wheel_2_velocity;
 }
 
 float omni_3wheel_control::get_wheel_velocity_3() {
-	this->wheel_3_velocity = this->wheel_3;
+	this->wheel_3_velocity = this->wheel_3 + this->robot_angular_wheel;
 	return this->wheel_3_velocity;
 }
 
@@ -81,4 +94,40 @@ void omni_3wheel_control::set_robot_angle(float angle) {
 
 float omni_3wheel_control::get_robot_angle() {
 	return this->robot_angle;
+}
+
+
+void omni_3wheel_control::set_sin_theta_1(float theta){
+	this->sin_theta_1 = theta;
+	return;
+}
+
+void omni_3wheel_control::set_cos_theta_1(float theta) {
+	this->cos_theta_1 = theta;
+	return;
+}
+
+void omni_3wheel_control::set_sin_theta_2(float theta) {
+	this->sin_theta_2 = theta;
+	return;
+}
+
+void omni_3wheel_control::set_cos_theta_2(float theta) {
+	this->cos_theta_2 = theta;
+	return;
+}
+
+void omni_3wheel_control::set_sin_theta_3(float theta) {
+	this->sin_theta_3 = theta;
+	return;
+}
+
+void omni_3wheel_control::set_cos_theta_3(float theta) {
+	this->cos_theta_3 = theta;
+	return;
+}
+
+void omni_3wheel_control::set_robot_range(float range) {
+	this->robot_range = range;
+	return;
 }
